@@ -13760,6 +13760,10 @@
     [
       {
         "type": "SYMBOL",
+        "name": "readonly_type"
+      },
+      {
+        "type": "SYMBOL",
         "name": "intersection_type"
       },
       {
@@ -13781,10 +13785,6 @@
       {
         "type": "SYMBOL",
         "name": "type_predicate"
-      },
-      {
-        "type": "SYMBOL",
-        "name": "readonly_type"
       }
     ],
     [

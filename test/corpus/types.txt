@@ -1744,6 +1744,79 @@ type t = readonly (readonly a[]) []
               (type_identifier))))))))
 
 ==================================
+Read-only types in unions, intersections and conditional types
+==================================
+
+type t = readonly string[] | null
+type t = keyof readonly a[] | b
+type t = readonly a[] & b
+type t = readonly a[] extends b ? 1 : 2
+type t = b | readonly a[]
+type t = readonly [a] | b
+type t = () => readonly a[] | b
+
+---
+
+(program
+  (type_alias_declaration
+    (type_identifier)
+    (union_type
+      (readonly_type
+        (array_type
+          (predefined_type)))
+      (literal_type
+        (null))))
+  (type_alias_declaration
+    (type_identifier)
+    (union_type
+      (index_type_query
+        (readonly_type
+          (array_type
+            (type_identifier))))
+      (type_identifier)))
+  (type_alias_declaration
+    (type_identifier)
+    (intersection_type
+      (readonly_type
+        (array_type
+          (type_identifier)))
+      (type_identifier)))
+  (type_alias_declaration
+    (type_identifier)
+    (conditional_type
+      (readonly_type
+        (array_type
+          (type_identifier)))
+      (type_identifier)
+      (literal_type
+        (number))
+      (literal_type
+        (number))))
+  (type_alias_declaration
+    (type_identifier)
+    (union_type
+      (type_identifier)
+      (readonly_type
+        (array_type
+          (type_identifier)))))
+  (type_alias_declaration
+    (type_identifier)
+    (union_type
+      (readonly_type
+        (tuple_type
+          (type_identifier)))
+      (type_identifier)))
+  (type_alias_declaration
+    (type_identifier)
+    (function_type
+      (formal_parameters)
+      (union_type
+        (readonly_type
+          (array_type
+            (type_identifier)))
+        (type_identifier)))))
+
+==================================
 Tuple types
 ==================================
 

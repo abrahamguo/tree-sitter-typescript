@@ -27,6 +27,14 @@ because editor queries match on node names.
   `for (await using of y)`. Some forms tsc rejects parse: `export default using x = f()`
   (as `export default const` does), `!` in a for head (`for (using x! = 1;;)`, as
   `for (let x!: T;;)` does), and `for (using as T;;)`, read as a cast.
+- `readonly` binds only to the type directly after it, as `keyof` does, so a following
+  union, intersection or conditional type now sits outside it, as in tsc (#75):
+  `readonly string[] | null` is a `union_type` of a `readonly_type` and `null`, and
+  `keyof readonly T[] | U`, `readonly T[] & U` and `readonly T[] extends U ? A : B`
+  nest the same way. Each of these used to be a `readonly_type` around the whole type.
+  This changes tree shape only: node types are unchanged, and 257 of 34,956 real files
+  parse differently, all of them in this way. From dokimasia/tree-sitter-typescript
+  (Roy Klopper). The parse table shrinks by 1 state (tsx 1).
 - A re-export takes import attributes, as an import does:
   `export * from "./m.json" with { type: "json" }`, `export * as ns from … with {…}`,
   `export { a } from … with {…}`, the `export type` forms and the older `assert {…}`
@@ -54,9 +62,7 @@ because editor queries match on node names.
   own `lib.es2015.symbol.wellknown.d.ts` uses, and `U extends keyof infer V ? V : never`
   were an ERROR (#58). From dokimasia/tree-sitter-typescript (Roy Klopper). The parse
   table grows by 9 states (tsx 9).
-  Known limit: `readonly` still takes everything after it, so
-  `keyof readonly T[] | U`, `& U` and `extends U ? A : B` nest inside `readonly` (as
-  `readonly string[] | null` already did) where tsc binds them outside `keyof`.
+  `keyof readonly T[] | U` nested inside `readonly` until #75.
 - `using` parses as an ordinary identifier: `let y = using`, `if (using) x`,
   `using[1]`, `using++`, `x = using as T`, `class A extends using {}` and a parameter
   or method named `using` were an ERROR (#57). `using` declares only when a binding
